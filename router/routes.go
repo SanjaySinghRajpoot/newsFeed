@@ -12,6 +12,7 @@ func GetRoute(r *gin.Engine) {
 	r.POST("/api/login", controllers.Login)
 
 	r.Use(middleware.RequireAuth)
+
 	r.POST("/api/logout", controllers.Logout)
 	userRouter := r.Group("/api/users")
 	{

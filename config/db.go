@@ -27,14 +27,19 @@ func goDotEnvVariable(key string) string {
 }
 
 func Connect() {
-	dsn := "host=localhost user=postgres password=postgres dbname=postgres port=5432 sslmode=disable"
+	dsn := "host=localhost user=postgres password=postgres dbname=newsfeed port=5432 sslmode=disable"
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 
 	if err != nil {
 		panic(err)
 	}
 
-	db.AutoMigrate(&models.User{})
+	// err = db.Migrator().DropTable(models.User{}, models.Post{}, models.UserTest{})
+	// if err != nil {
+	// 	log.Fatal("Table dropping failed")
+	// }
+
+	db.AutoMigrate(&models.User{}, &models.Post{})
 
 	DB = db
 }

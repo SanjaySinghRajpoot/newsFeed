@@ -5,12 +5,20 @@ import (
 	"gorm.io/gorm"
 )
 
-// User Model
 type User struct {
 	gorm.Model
+	ID       uint   `json:"id" gorm:"primary_key"`
 	Name     string `json:"name"`
 	Email    string `json:"email" gorm:"unique;not null"`
 	Password string `json:"-"`
+	Posts    []Post `gorm:"foreignKey:UserID;references:ID;constraint:OnDelete:CASCADE;"`
+}
+
+type Post struct {
+	gorm.Model
+	ID      uint   `json:"id" gorm:"primary_key"`
+	Content string `json:"content"`
+	UserID  uint   `json:"user_id"`
 }
 
 type JwtCustomClaims struct {
@@ -27,7 +35,4 @@ type JwtCustomRefreshClaims struct {
 type UserJWT struct {
 	ID   string `json:"id"`
 	Name string `json:"name"`
-}
-
-type Post struct {
 }
