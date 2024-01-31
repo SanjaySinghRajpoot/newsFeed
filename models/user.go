@@ -19,6 +19,7 @@ type Post struct {
 	ID      uint   `json:"id" gorm:"primary_key"`
 	Content string `json:"content"`
 	UserID  uint   `json:"user_id"`
+	User    User   `gorm:"foreignKey:UserID"`
 }
 
 type JwtCustomClaims struct {

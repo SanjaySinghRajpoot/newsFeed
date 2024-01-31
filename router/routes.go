@@ -21,4 +21,14 @@ func GetRoute(r *gin.Engine) {
 		userRouter.PUT("/:id/update", controllers.UpdateUser)
 		userRouter.DELETE("/:id/delete", controllers.DeleteUser)
 	}
+
+	// Post routes
+	postRouter := r.Group("/api/posts")
+	{
+		postRouter.GET("/", controllers.GetPosts)
+		postRouter.POST("/create", controllers.CreatePost)
+		postRouter.GET("/:id/show", controllers.ShowPost)
+		postRouter.PUT("/:id/update", controllers.UpdatePost)
+		postRouter.DELETE("/:id/delete", controllers.DeletePost)
+	}
 }
