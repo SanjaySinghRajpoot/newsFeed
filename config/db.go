@@ -1,17 +1,14 @@
 package config
 
 import (
-	"fmt"
 	"log"
 	"os"
 
+	"github.com/SanjaySinghRajpoot/newsFeed/models"
 	"github.com/joho/godotenv"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
-
-//   dsn := "host=localhost user=gorm password=gorm dbname=gorm port=9920 sslmode=disable TimeZone=Asia/Shanghai"
-//   db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 
 var DB *gorm.DB
 
@@ -38,24 +35,6 @@ func Connect() {
 	}
 
 	db.AutoMigrate(&models.User{})
-
-	adminEmail := os.Getenv("ADMIN_EMAIL")
-
-	fmt.Print(adminEmail)
-
-	// Check if admin already exist
-	row := db.Where("email = ?", adminEmail).Row()
-
-	if row == nil {
-		// Create a defualt admin User
-		user := models.User{
-			Name:     os.Getenv("ADMIN_NAME"),
-			Email:    os.Getenv("ADMIN_EMAIL"),
-			Password: os.Getenv("ADMIN_PASSWORD"),
-			Admin:    true,
-		}
-		db.Create(&user)
-	}
 
 	DB = db
 }
