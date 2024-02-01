@@ -1,39 +1,45 @@
 package models
 
 import (
-	"github.com/golang-jwt/jwt"
 	"gorm.io/gorm"
 )
 
 type User struct {
 	gorm.Model
-	ID       uint   `json:"id" gorm:"primary_key"`
 	Name     string `json:"name"`
 	Email    string `json:"email" gorm:"unique;not null"`
 	Password string `json:"-"`
-	Posts    []Post `gorm:"foreignKey:UserID;references:ID;constraint:OnDelete:CASCADE;"`
+	Posts    []Post
 }
+
+// type Post struct {
+// 	gorm.Model
+// 	ID      uint   `json:"id" gorm:"primary_key"`
+// 	Content string `json:"content"`
+// 	UserID  uint   `gorm:"foreignKey:UserID" json:"user_id"`
+// 	User    User   `gorm:"foreignKey:UserID"`
+// 	Comment []Comment
+// }
 
 type Post struct {
 	gorm.Model
-	ID      uint   `json:"id" gorm:"primary_key"`
-	Content string `json:"content"`
-	UserID  uint   `json:"user_id"`
-	User    User   `gorm:"foreignKey:UserID"`
+	Content  string `json:"content"`
+	UserID   uint   `gorm:"foreignKey:UserID" json:"userID"`
+	User     User   `gorm:"foreignKey:UserID"`
+	Comments []Comment
 }
 
-type JwtCustomClaims struct {
-	Name string `json:"name"`
-	ID   string `json:"id"`
-	jwt.StandardClaims
+type Comment struct {
+	ID     uint   `gorm:"primaryKey"`
+	PostID uint   `gorm:"foreignKey:PostID" json:"post_id" binding:"required,gt=0"`
+	UserID uint   `gorm:"foreignKey:UserID"`
+	Body   string `gorm:"type:text"`
+	User   User
 }
 
-type JwtCustomRefreshClaims struct {
-	ID string `json:"id"`
-	jwt.StandardClaims
-}
-
-type UserJWT struct {
-	ID   string `json:"id"`
-	Name string `json:"name"`
+type Follower struct {
+	gorm.Model
+	ID              uint `json:"id" gorm:"primary_key"`
+	FollowerUserID  uint `json:"follower_user_id"`
+	FollowingUserID uint `json:"following_user_id"`
 }

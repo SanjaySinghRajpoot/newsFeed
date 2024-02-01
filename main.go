@@ -20,10 +20,11 @@ func main() {
 	// Gin router
 	r := gin.Default()
 
-	router.GetRoute(r)
-
 	// Home Page endpoint
 	r.GET("/", HomepageHandler)
+
+	// All the Routes
+	router.GetRoute(r)
 
 	r.Run(":8081")
 }
