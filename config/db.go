@@ -39,7 +39,7 @@ func Connect() {
 	// 	log.Fatal("Table dropping failed")
 	// }
 
-	err = db.AutoMigrate(&models.User{}, &models.Post{}, &models.Comment{})
+	err = db.AutoMigrate(&models.User{}, &models.Post{}, &models.Comment{}, &models.Follower{})
 
 	if err != nil {
 		log.Fatal("Migration Error", err.Error())

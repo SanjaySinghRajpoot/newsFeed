@@ -40,7 +40,6 @@ type Comment struct {
 
 type Follower struct {
 	gorm.Model
-	ID              uint `json:"id" gorm:"primary_key"`
 	FollowerUserID  uint `json:"follower_user_id"`
 	FollowingUserID uint `json:"following_user_id"`
 }

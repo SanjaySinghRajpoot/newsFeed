@@ -9,7 +9,7 @@ import (
 )
 
 func HomepageHandler(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{"message": "Welcome to Real notification"})
+	c.JSON(http.StatusOK, gin.H{"message": "Welcome to News Feed"})
 }
 
 func main() {

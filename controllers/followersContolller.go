@@ -13,18 +13,26 @@ import (
 
 func FollowRequest(c *gin.Context) {
 	// Get the id from the url
-	followingUserID := c.Param("id")
+	followingUserID := c.Param("user_id")
 
 	followingInt, _ := strconv.Atoi(followingUserID)
 
 	authID := helpers.GetAuthUser(c).ID
 
-	follow := models.Follower{
-		FollowingUserID: uint(followingInt),
-		FollowerUserID:  authID,
+	if authID == uint(followingInt) {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "User can't follow themselves",
+		})
+		return
 	}
 
-	result := config.DB.Create(&follow)
+	follow := models.Follower{
+		FollowerUserID:  uint(followingInt),
+		FollowingUserID: authID,
+	}
+
+	result := config.DB.Where(models.Follower{FollowerUserID: uint(followingInt),
+		FollowingUserID: authID}).FirstOrCreate(&follow)
 
 	if result.Error != nil {
 		formatError.InternalServerError(c, result.Error)
@@ -39,7 +47,7 @@ func FollowRequest(c *gin.Context) {
 
 func UnfollowRequest(c *gin.Context) {
 	// Get the id from the url
-	followingUserID := c.Param("id")
+	followingUserID := c.Param("user_id")
 
 	followingUserIDInt, _ := strconv.Atoi(followingUserID)
 
