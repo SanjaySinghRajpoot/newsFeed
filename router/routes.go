@@ -28,8 +28,10 @@ func GetRoute(r *gin.Engine) {
 	postRouter.PUT("/:id/update", controllers.UpdatePost)
 	postRouter.DELETE("/:id/delete", controllers.DeletePost)
 
-	r.POST("/api/:user_id/follow", controllers.FollowRequest)
-	r.DELETE("/api/:user_id/unfollow", controllers.UnfollowRequest)
+	friendRouter := r.Group("/api/friend")
+	friendRouter.GET("/", controllers.GetFriends)
+	friendRouter.POST("/:user_id/follow", controllers.FollowRequest)
+	friendRouter.DELETE("/:user_id/unfollow", controllers.UnfollowRequest)
 
 	// Comment routes
 	commentRouter := r.Group("/api/posts/comment")
@@ -37,4 +39,13 @@ func GetRoute(r *gin.Engine) {
 	commentRouter.GET("/:comment_id", controllers.GetComment)
 	commentRouter.PUT("/:comment_id/update", controllers.UpdateComment)
 	commentRouter.DELETE("/:comment_id/delete", controllers.DeleteComment)
+
+	r.GET("/api/newsfeed", controllers.GetNewsFeed)
+
+	// get news feed
+	// when we will hit this endpoint this will give me 10 posts which are related to the user
+	// 1. based on the follow list -> if their fiend posts any new posts then we will add those in this
+	// 2. Sentimental analysis -> if the post if negative, positive, neutral we will rank them against a number
+	// 3. user interest -> based on likes and interaction
+	//
 }
