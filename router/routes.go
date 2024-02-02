@@ -31,4 +31,7 @@ func GetRoute(r *gin.Engine) {
 		postRouter.PUT("/:id/update", controllers.UpdatePost)
 		postRouter.DELETE("/:id/delete", controllers.DeletePost)
 	}
+
+	r.GET("/api/:id/follow", controllers.FollowRequest)
+	r.DELETE("/api/:id/unfollow", controllers.UnfollowRequest)
 }

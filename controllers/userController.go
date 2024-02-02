@@ -49,15 +49,6 @@ func Signup(c *gin.Context) {
 		})
 		return
 	}
-	//if err := initializers.DB.Where("email = ?", userInput.Email).First(&models.User{}).Error; err == nil {
-	//	c.JSON(http.StatusConflict, gin.H{
-	//		"validations": map[string]interface{}{
-	//			"Email": "The email is already exist!",
-	//		},
-	//	})
-	//
-	//	return
-	//}
 
 	// Hash the password
 	hashPassword, err := bcrypt.GenerateFromPassword([]byte(userInput.Password), 10)
@@ -83,9 +74,6 @@ func Signup(c *gin.Context) {
 		formatError.InternalServerError(c, result.Error)
 		return
 	}
-
-	// Return the user
-	//user.Password = ""
 
 	c.JSON(http.StatusOK, gin.H{
 		"user": user,
@@ -150,7 +138,7 @@ func Login(c *gin.Context) {
 	c.SetSameSite(http.SameSiteLaxMode)
 	c.SetCookie("Authorization", tokenString, 3600*24*30, "", "", false, true)
 	c.JSON(http.StatusOK, gin.H{
-		"message": "User login successfull",
+		"message": "User login successful",
 	})
 }
 

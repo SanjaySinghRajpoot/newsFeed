@@ -30,10 +30,11 @@ type Post struct {
 }
 
 type Comment struct {
+	gorm.Model
 	ID     uint   `gorm:"primaryKey"`
 	PostID uint   `gorm:"foreignKey:PostID" json:"post_id" binding:"required,gt=0"`
 	UserID uint   `gorm:"foreignKey:UserID"`
-	Body   string `gorm:"type:text"`
+	Body   string `gorm:"type:text" json:"body"`
 	User   User
 }
 

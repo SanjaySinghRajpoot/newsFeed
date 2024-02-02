@@ -93,9 +93,7 @@ func ShowPost(c *gin.Context) {
 
 	// Find the post
 	var post models.Post
-	result := config.DB.Preload("Category", func(db *gorm.DB) *gorm.DB {
-		return db.Select("id, name, slug")
-	}).Preload("User", func(db *gorm.DB) *gorm.DB {
+	result := config.DB.Preload("User", func(db *gorm.DB) *gorm.DB {
 		return db.Select("id, name")
 	}).Preload("Comments", func(db *gorm.DB) *gorm.DB {
 		return db.Preload("User", func(db *gorm.DB) *gorm.DB {
