@@ -15,23 +15,26 @@ func GetRoute(r *gin.Engine) {
 
 	r.POST("/api/logout", controllers.Logout)
 	userRouter := r.Group("/api/users")
-	{
-		userRouter.GET("/", controllers.GetUsers)
-		userRouter.GET("/:id", controllers.GetUser)
-		userRouter.PUT("/:id/update", controllers.UpdateUser)
-		userRouter.DELETE("/:id/delete", controllers.DeleteUser)
-	}
+	userRouter.GET("/", controllers.GetUsers)
+	userRouter.GET("/:id", controllers.GetUser)
+	userRouter.PUT("/:id/update", controllers.UpdateUser)
+	userRouter.DELETE("/:id/delete", controllers.DeleteUser)
 
 	// Post routes
 	postRouter := r.Group("/api/posts")
-	{
-		postRouter.GET("/", controllers.GetPosts)
-		postRouter.POST("/create", controllers.CreatePost)
-		postRouter.GET("/:id/show", controllers.ShowPost)
-		postRouter.PUT("/:id/update", controllers.UpdatePost)
-		postRouter.DELETE("/:id/delete", controllers.DeletePost)
-	}
+	postRouter.GET("/", controllers.GetPosts)
+	postRouter.GET("/:id/show", controllers.ShowPost)
+	postRouter.POST("/create", controllers.CreatePost)
+	postRouter.PUT("/:id/update", controllers.UpdatePost)
+	postRouter.DELETE("/:id/delete", controllers.DeletePost)
 
-	r.GET("/api/:id/follow", controllers.FollowRequest)
-	r.DELETE("/api/:id/unfollow", controllers.UnfollowRequest)
+	r.POST("/api/:user_id/follow", controllers.FollowRequest)
+	r.DELETE("/api/:user_id/unfollow", controllers.UnfollowRequest)
+
+	// Comment routes
+	commentRouter := r.Group("/api/posts/comment")
+	commentRouter.POST("/add", controllers.CommentOnPost)
+	commentRouter.GET("/:comment_id", controllers.GetComment)
+	commentRouter.PUT("/:comment_id/update", controllers.UpdateComment)
+	commentRouter.DELETE("/:comment_id/delete", controllers.DeleteComment)
 }
