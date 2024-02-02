@@ -11,6 +11,33 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+func GetFriends(c *gin.Context) {
+
+	userID := helpers.GetAuthUser(c).ID
+
+	followList := make([]models.Follower, 0)
+	result := config.DB.Where("follower_user_id = ?", userID).Find(&followList)
+
+	if result.Error != nil {
+		formatError.InternalServerError(c, result.Error)
+		return
+	}
+
+	followingList := make([]models.Follower, 0)
+	result = config.DB.Where("following_user_id = ?", userID).Find(&followingList)
+
+	if result.Error != nil {
+		formatError.InternalServerError(c, result.Error)
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"userID":    userID,
+		"followers": followingList,
+		"following": followList,
+	})
+}
+
 func FollowRequest(c *gin.Context) {
 	// Get the id from the url
 	followingUserID := c.Param("user_id")
