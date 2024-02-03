@@ -19,6 +19,7 @@ News Feed is a backend service designed to facilitate a social media-like experi
 
 - **Golang**: The core programming language used for building the backend logic.
 - **Gin**: A lightweight HTTP web framework for building APIs in Go.
+- **Redis Cache**: A in-memory data store used as a cache, vector databases.
 - **GORM**: An ORM library for Go, used for interacting with the PostgreSQL database.
 - **PostgreSQL**: A powerful, open-source relational database management system.
 - **Docker Compose**: Docker Compose is used for defining and running multi-container Docker applications.
