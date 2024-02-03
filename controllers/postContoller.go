@@ -6,6 +6,7 @@ import (
 
 	"github.com/SanjaySinghRajpoot/newsFeed/config"
 	"github.com/SanjaySinghRajpoot/newsFeed/models"
+	"github.com/SanjaySinghRajpoot/newsFeed/utils"
 	"github.com/SanjaySinghRajpoot/newsFeed/utils/formatError"
 	helpers "github.com/SanjaySinghRajpoot/newsFeed/utils/helper"
 	"github.com/SanjaySinghRajpoot/newsFeed/utils/pagination"
@@ -37,17 +38,23 @@ func CreatePost(c *gin.Context) {
 	}
 
 	// Create a post
-	authID := helpers.GetAuthUser(c).ID
+	UserID := helpers.GetAuthUser(c).ID
 
 	post := models.Post{
 		Content: userInput.Content,
-		UserID:  authID,
+		UserID:  UserID,
 	}
 
 	result := config.DB.Create(&post)
 
 	if result.Error != nil {
 		formatError.InternalServerError(c, result.Error)
+		return
+	}
+
+	err := utils.SendNotification(post)
+	if err != nil {
+		formatError.InternalServerError(c, err)
 		return
 	}
 

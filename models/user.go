@@ -43,3 +43,10 @@ type Follower struct {
 	FollowerUserID  uint `json:"follower_user_id"`
 	FollowingUserID uint `json:"following_user_id"`
 }
+
+type NotificationPayload struct {
+	// Type -> email, sms, inapp
+	UserID      []uint `json:"user_id"`
+	Type        string `json:"type"  validate:"required,oneof=sms email inapp"`
+	Description string `json:"description"`
+}
