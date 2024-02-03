@@ -13,6 +13,7 @@ News Feed is a backend service designed to facilitate a social media-like experi
 - **Field Validation**: Input fields are validated to maintain data integrity and prevent errors.
 - **Structured Logging**: Logging is structured for easier monitoring, debugging, and analysis.
 - **Pagination**: Pagination is implemented to efficiently handle large volumes of data and improve performance.
+- **Redis Cache**: Redis Cache is used for smooth login process and improved response time.
 
 ## Technologies Used
 

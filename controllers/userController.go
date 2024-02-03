@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
 	"os"
 	"strconv"
@@ -10,6 +11,7 @@ import (
 	"github.com/SanjaySinghRajpoot/newsFeed/models"
 	"github.com/SanjaySinghRajpoot/newsFeed/utils/formatError"
 	"github.com/SanjaySinghRajpoot/newsFeed/utils/pagination"
+	"github.com/SanjaySinghRajpoot/newsFeed/utils/redis"
 	"github.com/SanjaySinghRajpoot/newsFeed/utils/validations.go"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
@@ -96,6 +98,22 @@ func Login(c *gin.Context) {
 		return
 	}
 
+	GetTokenString, er := redis.GetRedisData(userInput.Email)
+	if er != nil {
+		fmt.Printf("Failed to Get the Redis Cache, Setting the Cache: %s", er)
+	}
+
+	if GetTokenString != "" {
+
+		c.SetSameSite(http.SameSiteLaxMode)
+		c.SetCookie("Authorization", GetTokenString, 3600*24*30, "", "", false, true)
+		c.JSON(http.StatusOK, gin.H{
+			"message": "User login successful",
+		})
+
+		return
+	}
+
 	// Find the user by email
 	var user models.User
 	config.DB.First(&user, "email = ?", userInput.Email)
@@ -131,6 +149,20 @@ func Login(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "Failed to create token",
 		})
+		return
+	}
+
+	// set the redis cache here
+	msg, error := redis.SetRedisData(userInput.Email, tokenString)
+
+	if error != nil {
+
+		fmt.Printf("Failed to Set the Redis Cache: %s", msg)
+
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": error.Error(),
+		})
+
 		return
 	}
 
