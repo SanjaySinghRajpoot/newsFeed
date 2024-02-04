@@ -98,21 +98,23 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	GetTokenString, er := redis.GetRedisData(userInput.Email)
-	if er != nil {
-		fmt.Printf("Failed to Get the Redis Cache, Setting the Cache: %s", er)
-	}
+	// GetTokenString, er := redis.GetRedisData(userInput.Email)
+	// if er != nil {
+	// 	fmt.Printf("Failed to Get the Redis Cache, Setting the Cache: %s", er)
+	// }
 
-	if GetTokenString != "" {
+	// if GetTokenString != "" {
 
-		c.SetSameSite(http.SameSiteLaxMode)
-		c.SetCookie("Authorization", GetTokenString, 3600*24*30, "", "", false, true)
-		c.JSON(http.StatusOK, gin.H{
-			"message": "User login successful",
-		})
+	// 	fmt.Println("redis cache working for login")
 
-		return
-	}
+	// 	c.SetSameSite(http.SameSiteLaxMode)
+	// 	c.SetCookie("Authorization", GetTokenString, 3600*24*30, "", "", false, true)
+	// 	c.JSON(http.StatusOK, gin.H{
+	// 		"message": "User login successful",
+	// 	})
+
+	// 	return
+	// }
 
 	// Find the user by email
 	var user models.User

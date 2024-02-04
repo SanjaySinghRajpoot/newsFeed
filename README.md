@@ -14,6 +14,8 @@ News Feed is a backend service designed to facilitate a social media-like experi
 - **Structured Logging**: Logging is structured for easier monitoring, debugging, and analysis.
 - **Pagination**: Pagination is implemented to efficiently handle large volumes of data and improve performance.
 - **Redis Cache**: Redis Cache is used for smooth login process and improved response time.
+- **Rate Limiter**: A User ID based rate limiter has been added to limit multiple posts by the same user. 
+
 
 ## Technologies Used
 

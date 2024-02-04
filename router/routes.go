@@ -28,6 +28,7 @@ func GetRoute(r *gin.Engine) {
 	postRouter.PUT("/:id/update", controllers.UpdatePost)
 	postRouter.DELETE("/:id/delete", controllers.DeletePost)
 
+	// Friends Route
 	friendRouter := r.Group("/api/friend")
 	friendRouter.GET("/", controllers.GetFriends)
 	friendRouter.POST("/:user_id/follow", controllers.FollowRequest)
@@ -41,6 +42,11 @@ func GetRoute(r *gin.Engine) {
 	commentRouter.DELETE("/:comment_id/delete", controllers.DeleteComment)
 
 	r.GET("/api/newsfeed", controllers.GetNewsFeed)
+
+	// active/Inactive status
+	// we can make a heartbeat endpoint that send a request to a client every 5s and check of they are online
+	// if we get a positive response back then we know that they are online if we don't get any response then
+	// we conclude that they are offline, let's make a new field in the Users table and call it Status
 
 	// get news feed
 	// when we will hit this endpoint this will give me 10 posts which are related to the user

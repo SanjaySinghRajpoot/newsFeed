@@ -10,6 +10,7 @@ import (
 	"github.com/SanjaySinghRajpoot/newsFeed/utils/formatError"
 	helpers "github.com/SanjaySinghRajpoot/newsFeed/utils/helper"
 	"github.com/SanjaySinghRajpoot/newsFeed/utils/pagination"
+	limiter "github.com/SanjaySinghRajpoot/newsFeed/utils/rateLimiter"
 	"github.com/SanjaySinghRajpoot/newsFeed/utils/validations.go"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
@@ -40,6 +41,18 @@ func CreatePost(c *gin.Context) {
 	// Create a post
 	UserID := helpers.GetAuthUser(c).ID
 
+	// rate limit
+	err := limiter.RateLimiter(UserID)
+
+	if err != nil {
+		// Return the post
+		c.JSON(http.StatusTooManyRequests, gin.H{
+			"message": err,
+		})
+
+		return
+	}
+
 	post := models.Post{
 		Content: userInput.Content,
 		UserID:  UserID,
@@ -52,7 +65,7 @@ func CreatePost(c *gin.Context) {
 		return
 	}
 
-	err := utils.SendNotification(post)
+	err = utils.SendNotification(post)
 	if err != nil {
 		formatError.InternalServerError(c, err)
 		return

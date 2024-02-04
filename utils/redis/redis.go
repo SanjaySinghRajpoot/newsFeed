@@ -43,3 +43,29 @@ func GetRedisData(email string) (string, error) {
 
 	return tokenString, nil
 }
+
+func SetUserID(UserID string, Count int) (string, error) {
+
+	ctx := context.Background()
+
+	err := RedisClient.Set(ctx, UserID, Count, 30*time.Minute).Err()
+
+	if err != nil {
+		return "Something went wrong", err
+	}
+
+	return "", nil
+}
+
+func GetUserID(UserID string) (int, error) {
+
+	ctx := context.Background()
+
+	cnt, err := RedisClient.Get(ctx, UserID).Int()
+
+	if err != nil {
+		return -1, err
+	}
+
+	return cnt, nil
+}
