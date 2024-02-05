@@ -2,8 +2,11 @@ package redis
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
 	"time"
 
+	"github.com/SanjaySinghRajpoot/newsFeed/models"
 	"github.com/redis/go-redis/v9"
 )
 
@@ -68,4 +71,42 @@ func GetUserID(UserID string) (int, error) {
 	}
 
 	return cnt, nil
+}
+
+func SetPostCache(UserID uint, post models.Post) (string, error) {
+	ctx := context.Background()
+
+	redisKey := fmt.Sprintf("%d", UserID)
+
+	postBytes, err := json.Marshal(&post)
+	if err != nil {
+		return "", err
+	}
+
+	err = RedisClient.Set(ctx, redisKey, postBytes, 30*time.Minute).Err()
+
+	if err != nil {
+		return "Something went wrong", err
+	}
+
+	return "", nil
+}
+
+func GetPostCache(UserID uint) (models.Post, error) {
+
+	ctx := context.Background()
+
+	userIDstr := fmt.Sprintf("%d", UserID)
+
+	var post models.Post
+
+	str, err := RedisClient.Get(ctx, userIDstr).Bytes()
+
+	err = json.Unmarshal(str, &post)
+
+	if err != nil {
+		return models.Post{}, err
+	}
+
+	return post, nil
 }

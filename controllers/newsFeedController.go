@@ -7,6 +7,7 @@ import (
 	"github.com/SanjaySinghRajpoot/newsFeed/models"
 	"github.com/SanjaySinghRajpoot/newsFeed/utils/formatError"
 	helpers "github.com/SanjaySinghRajpoot/newsFeed/utils/helper"
+	"github.com/SanjaySinghRajpoot/newsFeed/utils/redis"
 	"github.com/gin-gonic/gin"
 )
 
@@ -29,15 +30,22 @@ func GetNewsFeed(c *gin.Context) {
 
 	for _, follow := range followList {
 
-		var userPosts []models.Post
-		result := config.DB.Where("user_id = ? AND created_at BETWEEN NOW() - INTERVAL '24 HOURS' AND NOW()", follow.FollowingUserID).Find(&userPosts)
+		var userPosts models.Post
+		// result := config.DB.Where("user_id = ? AND created_at BETWEEN NOW() - INTERVAL '24 HOURS' AND NOW()", follow.FollowingUserID).Find(&userPosts)
 
-		if result.Error != nil {
-			formatError.InternalServerError(c, result.Error)
+		// if result.Error != nil {
+		// 	formatError.InternalServerError(c, result.Error)
+		// 	return
+		// }
+
+		userPosts, err := redis.GetPostCache(follow.FollowingUserID)
+		if err != nil {
+			formatError.InternalServerError(c, err)
 			return
 		}
 
-		posts = append(posts, userPosts...)
+		posts = append(posts, userPosts)
+
 	}
 
 	c.JSON(http.StatusOK, gin.H{

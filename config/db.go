@@ -27,7 +27,6 @@ func goDotEnvVariable(key string) string {
 }
 
 func Connect() {
-	// dsn := "host=localhost user=postgres password=postgres dbname=newsfeed port=5432 sslmode=disable"
 
 	dsn := os.Getenv("DATABASE_URL")
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})

@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -11,6 +12,7 @@ import (
 	helpers "github.com/SanjaySinghRajpoot/newsFeed/utils/helper"
 	"github.com/SanjaySinghRajpoot/newsFeed/utils/pagination"
 	limiter "github.com/SanjaySinghRajpoot/newsFeed/utils/rateLimiter"
+	"github.com/SanjaySinghRajpoot/newsFeed/utils/redis"
 	"github.com/SanjaySinghRajpoot/newsFeed/utils/validations.go"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
@@ -65,7 +67,12 @@ func CreatePost(c *gin.Context) {
 		return
 	}
 
-	// let's set this in Redis cache
+	msg, er := redis.SetPostCache(UserID, post)
+	if er != nil {
+		fmt.Println(msg)
+		formatError.InternalServerError(c, er)
+		return
+	}
 
 	err = utils.SendNotification(post)
 	if err != nil {
