@@ -19,7 +19,21 @@ services:
     command: redis-server --save 20 1 --loglevel warning --requirepass ${PASSWORD}
     volumes: 
       - cache:/data
-
+  main-app:
+    container_name: main-app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      DATABASE_URL: "host=newsfeed-db user=postgres password=postgres dbname=postgres sslmode=disable"
+    ports:
+      - "8081:8081"
+    volumes:
+      - ./:/app
+    depends_on:
+      - db
 volumes:
   cache:
+    driver: local
+  main-app:
     driver: local
