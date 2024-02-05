@@ -65,6 +65,8 @@ func CreatePost(c *gin.Context) {
 		return
 	}
 
+	// let's set this in Redis cache
+
 	err = utils.SendNotification(post)
 	if err != nil {
 		formatError.InternalServerError(c, err)

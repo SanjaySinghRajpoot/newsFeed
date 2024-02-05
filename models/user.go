@@ -12,15 +12,6 @@ type User struct {
 	Posts    []Post
 }
 
-// type Post struct {
-// 	gorm.Model
-// 	ID      uint   `json:"id" gorm:"primary_key"`
-// 	Content string `json:"content"`
-// 	UserID  uint   `gorm:"foreignKey:UserID" json:"user_id"`
-// 	User    User   `gorm:"foreignKey:UserID"`
-// 	Comment []Comment
-// }
-
 type Post struct {
 	gorm.Model
 	Content  string `json:"content"`

@@ -10,6 +10,7 @@ import (
 	"github.com/SanjaySinghRajpoot/newsFeed/config"
 	"github.com/SanjaySinghRajpoot/newsFeed/models"
 	"github.com/SanjaySinghRajpoot/newsFeed/utils/formatError"
+	helpers "github.com/SanjaySinghRajpoot/newsFeed/utils/helper"
 	"github.com/SanjaySinghRajpoot/newsFeed/utils/pagination"
 	"github.com/SanjaySinghRajpoot/newsFeed/utils/redis"
 	"github.com/SanjaySinghRajpoot/newsFeed/utils/validations.go"
@@ -234,10 +235,22 @@ func UpdateUser(c *gin.Context) {
 	// Get the id from url
 	id := c.Param("id")
 
+	UserID := helpers.GetAuthUser(c).ID
+
+	userIDStr := fmt.Sprintf("%d", UserID)
+
+	if id != userIDStr {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"message": "",
+		})
+		return
+	}
+
 	// Get the name, email and password from request
 	var userInput struct {
-		Name  string `json:"name" binding:"required,min=2,max=50"`
-		Email string `json:"email" binding:"required,email"`
+		Name     string `json:"name" binding:"required,min=2,max=50"`
+		Email    string `json:"email" binding:"required,email"`
+		Password string `json:"password"`
 	}
 
 	if err := c.ShouldBindJSON(&userInput); err != nil {
@@ -275,8 +288,9 @@ func UpdateUser(c *gin.Context) {
 
 	// Prepare data to update
 	updateUser := models.User{
-		Name:  userInput.Name,
-		Email: userInput.Email,
+		Name:     userInput.Name,
+		Email:    userInput.Email,
+		Password: userInput.Password,
 	}
 
 	// Update the user
