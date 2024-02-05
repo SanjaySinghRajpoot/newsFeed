@@ -14,6 +14,9 @@ services:
   cache:
     image: redis:6.2-alpine
     restart: always
+    container_name: cache
+    environment:
+      - ADDR=cache:6379
     ports:
       - '6379:6379'
     command: redis-server --save 20 1 --loglevel warning --requirepass ${PASSWORD}
@@ -32,6 +35,7 @@ services:
       - ./:/app
     depends_on:
       - db
+      - cache
 volumes:
   cache:
     driver: local
