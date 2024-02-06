@@ -15,6 +15,7 @@ var RedisClient *redis.Client
 func SetUpRedis(password string) *redis.Client {
 
 	return redis.NewClient(&redis.Options{
+		// use os.env
 		Addr:     "cache:6379",
 		Password: password,
 		DB:       0,
