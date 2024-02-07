@@ -58,8 +58,8 @@ func FollowRequest(c *gin.Context) {
 		FollowingUserID: authID,
 	}
 
-	result := config.DB.Where(models.Follower{FollowerUserID: uint(followingInt),
-		FollowingUserID: authID}).FirstOrCreate(&follow)
+	result := config.DB.Where(models.Follower{FollowerUserID: authID,
+		FollowingUserID: uint(followingInt)}).FirstOrCreate(&follow)
 
 	if result.Error != nil {
 		formatError.InternalServerError(c, result.Error)

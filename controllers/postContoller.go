@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"sync"
 
 	"github.com/SanjaySinghRajpoot/newsFeed/config"
 	"github.com/SanjaySinghRajpoot/newsFeed/models"
@@ -60,25 +61,38 @@ func CreatePost(c *gin.Context) {
 		UserID:  UserID,
 	}
 
-	result := config.DB.Create(&post)
+	var wg sync.WaitGroup
 
-	if result.Error != nil {
-		formatError.InternalServerError(c, result.Error)
-		return
-	}
+	wg.Add(3)
 
-	msg, er := redis.SetPostCache(UserID, post)
-	if er != nil {
-		fmt.Println(msg)
-		formatError.InternalServerError(c, er)
-		return
-	}
+	go func() {
+		defer wg.Done()
+		result := config.DB.Create(&post)
 
-	err = utils.SendNotification(post)
-	if err != nil {
-		formatError.InternalServerError(c, err)
-		return
-	}
+		if result.Error != nil {
+			formatError.InternalServerError(c, result.Error)
+			return
+		}
+	}()
+
+	go func() {
+		defer wg.Done()
+		msg, er := redis.SetPostCache(UserID, post)
+		if er != nil {
+			fmt.Println(msg)
+			formatError.InternalServerError(c, er)
+			return
+		}
+	}()
+
+	go func() {
+		defer wg.Done()
+		err = utils.SendNotification(post)
+		if err != nil {
+			formatError.InternalServerError(c, err)
+			// return
+		}
+	}()
 
 	// Return the post
 	c.JSON(http.StatusOK, gin.H{

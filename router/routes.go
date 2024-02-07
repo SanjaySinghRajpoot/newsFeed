@@ -31,8 +31,8 @@ func GetRoute(r *gin.Engine) {
 	// Friends Route
 	friendRouter := r.Group("/api/friend")
 	friendRouter.GET("/", controllers.GetFriends)
-	friendRouter.POST("/:user_id/follow", controllers.FollowRequest)
-	friendRouter.DELETE("/:user_id/unfollow", controllers.UnfollowRequest)
+	friendRouter.POST("/:following_user_id/follow", controllers.FollowRequest)
+	friendRouter.DELETE("/:following_user_id/unfollow", controllers.UnfollowRequest)
 
 	// Comment routes
 	commentRouter := r.Group("/api/posts/comment")
