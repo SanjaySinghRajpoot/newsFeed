@@ -62,6 +62,3 @@ Contributions are welcome! If you'd like to contribute to News Feed, please foll
 
 This project is licensed under the [MIT License](LICENSE).
 
-## Support
-
-For any questions, issues, or support, please [open an issue](https://github.com/example/news-feed/issues) on GitHub.
