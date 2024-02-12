@@ -89,7 +89,7 @@ func CreatePost(c *gin.Context) {
 
 	go func() {
 		defer wg.Done()
-		err = utils.SendNotification(post)
+		err := utils.SendNotification(post)
 		if err != nil {
 			formatError.InternalServerError(c, err)
 			// return

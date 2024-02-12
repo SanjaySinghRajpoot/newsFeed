@@ -1,8 +1,6 @@
 package config
 
 import (
-	"fmt"
-
 	"gorm.io/driver/postgres"
 
 	"gorm.io/gorm"
@@ -38,8 +36,6 @@ func Connect() {
 	// if err != nil {
 	// 	log.Fatal("Table dropping failed")
 	// }
-
-	fmt.Println(dsn)
 
 	// err1 := db.Debug().AutoMigrate(&models.User{}, &models.Post{}, &models.Comment{}, &models.Follower{})
 

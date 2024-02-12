@@ -57,7 +57,7 @@ type SentimentAnalysisPayload struct {
 }
 
 type SentimentAnalysisResponse struct {
-	ProminentSentiment string  `json:"prominent_sentiment"`
+	ProminentSentiment string  `json:"prominent_sentiment" gorm:"default:notSet"`
 	ScoreNegative      float64 `json:"score_negative"`
 	ScoreNeutral       float64 `json:"score_neutral"`
 	ScorePositive      float64 `json:"score_positive"`

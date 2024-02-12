@@ -51,8 +51,9 @@ func GetSentimentAnalysis(post models.Post) (models.SentimentAnalysisResponse, e
 func UpdateSentimentAnalysisCRON() {
 
 	var userPosts []models.Post
-	result := config.DB.Where("created_at BETWEEN NOW() - INTERVAL '24 HOURS' AND NOW()").Find(&userPosts)
-
+	result := config.DB.Debug().Where("created_at BETWEEN NOW() - INTERVAL '24 HOURS' AND NOW()").
+		Where("sentiment_analysis->>'prominent_sentiment' = ?", "").
+		Find(&userPosts)
 	if result.Error != nil {
 		log := fmt.Sprintf("Error unable to get the data: %s", result.Error)
 		fmt.Println(log)
