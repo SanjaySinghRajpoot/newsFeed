@@ -1,3 +1,4 @@
 models--cardiffnlp--twitter-roberta-base-sentiment-latest
 __pycache__
 project-name-env
+staticFileCache

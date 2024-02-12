@@ -1,11 +1,10 @@
 package config
 
 import (
-	"log"
-	"os"
+	"fmt"
 
-	"github.com/SanjaySinghRajpoot/newsFeed/models"
 	"gorm.io/driver/postgres"
+
 	"gorm.io/gorm"
 )
 
@@ -27,23 +26,26 @@ var DB *gorm.DB
 
 func Connect() {
 
-	dsn := os.Getenv("DATABASE_URL")
+	// dsn := os.Getenv("DATABASE_URL")
+	dsn := "host=localhost user=postgres password=postgres dbname=postgres sslmode=disable"
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 
 	if err != nil {
 		panic(err)
 	}
 
-	// err = db.Migrator().DropTable(models.User{}, models.Post{}, models.UserTest{})
+	// err = db.Migrator().DropTable(models.User{}, models.Post{}, &models.Comment{}, &models.Follower{})
 	// if err != nil {
 	// 	log.Fatal("Table dropping failed")
 	// }
 
-	err = db.AutoMigrate(&models.User{}, &models.Post{}, &models.Comment{}, &models.Follower{})
+	fmt.Println(dsn)
 
-	if err != nil {
-		log.Fatal("Migration Error", err.Error())
-	}
+	// err1 := db.Debug().AutoMigrate(&models.User{}, &models.Post{}, &models.Comment{}, &models.Follower{})
+
+	// if err1 != nil {
+	// 	log.Fatal("Migration Error ", err1)
+	// }
 
 	DB = db
 }

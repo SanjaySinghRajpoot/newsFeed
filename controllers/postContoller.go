@@ -67,12 +67,14 @@ func CreatePost(c *gin.Context) {
 
 	go func() {
 		defer wg.Done()
+
 		result := config.DB.Create(&post)
 
 		if result.Error != nil {
 			formatError.InternalServerError(c, result.Error)
 			return
 		}
+
 	}()
 
 	go func() {

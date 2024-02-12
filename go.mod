@@ -16,6 +16,7 @@ require (
 	github.com/go-playground/validator v9.31.0+incompatible // indirect
 	github.com/go-playground/validator/v10 v10.17.0 // indirect
 	github.com/go-redis/redis v6.15.9+incompatible // indirect
+	github.com/go-sql-driver/mysql v1.7.1 // indirect
 	github.com/goccy/go-json v0.10.2 // indirect
 	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
 	github.com/golang-jwt/jwt/v4 v4.5.0 // indirect
@@ -45,8 +46,11 @@ require (
 	golang.org/x/sys v0.16.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
 	google.golang.org/protobuf v1.32.0 // indirect
+	gopkg.in/robfig/cron.v2 v2.0.0-20150107220207-be2e0b0deed5 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
+	gorm.io/datatypes v1.2.0 // indirect
+	gorm.io/driver/mysql v1.5.4 // indirect
 	gorm.io/driver/postgres v1.5.4 // indirect
-	gorm.io/gorm v1.25.6 // indirect
+	gorm.io/gorm v1.25.7 // indirect
 	gotest.tools/v3 v3.5.1 // indirect
 )

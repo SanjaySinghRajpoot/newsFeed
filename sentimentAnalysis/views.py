@@ -1,4 +1,3 @@
-
 # ? VIEWS.PY
 
 # Importing dependencies.
@@ -15,70 +14,69 @@ import mimetypes
 app = Flask(__name__)
 views = Blueprint(__name__, "views")
 
-HUGGINGFACE_CACHE_DIR = './staticFileCache'
-TORCH_CACHE_DIR = './staticFileCache'
-os.environ['TORCH_HOME'] = TORCH_CACHE_DIR
+HUGGINGFACE_CACHE_DIR = "./staticFileCache"
+TORCH_CACHE_DIR = "./staticFileCache"
+os.environ["TORCH_HOME"] = TORCH_CACHE_DIR
 
 # Importing pre-trained model for Sentiment Analysis.
 SENTIMENT_MODEL = "cardiffnlp/twitter-roberta-base-sentiment-latest"
 
 # Model Training for Polarity Scores.
 tokenizer = AutoTokenizer.from_pretrained(
-    SENTIMENT_MODEL, cache_dir=HUGGINGFACE_CACHE_DIR)
+    SENTIMENT_MODEL, cache_dir=HUGGINGFACE_CACHE_DIR
+)
 sentiment_model = AutoModelForSequenceClassification.from_pretrained(
-    SENTIMENT_MODEL, cache_dir=HUGGINGFACE_CACHE_DIR)
+    SENTIMENT_MODEL, cache_dir=HUGGINGFACE_CACHE_DIR
+)
 
 
-# * Routing for Home Page.
-@views.route('/', methods=["POST"])
+@views.route("/analysis", methods=["POST"])
 def home():
 
     # When a form input is received, show the sentiment based on the input.
-    if request.method == "POST":
-        data = request.json
+    data = request.json
 
-        input_type = data["type"]
+    input_type = data["type"]
 
-        # Find the input text from different types.
-        input_text = ''
+    # Find the input text from different types.
+    input_text = ""
 
-        print(data["value"])
+    print(data["value"])
 
-        if (input_type == "text"):
-            input_text = data["value"]
-        elif (input_type == "url"):
-            url = request.form.get("input")
-            g = Goose()
-            article = g.extract(url=url)
-            input_text = article.cleaned_text
-        elif (input_type == "media"):
-            file = request.files.get("input")
-            if file:
-                filename = secure_filename(file.filename)
-                file_path = os.path.join(
-                    app.root_path, 'static', 'files', filename)
-                file.save(file_path)
-                input_media = process_files(file_path)
+    if input_type == "text":
+        input_text = data["value"]
+    elif input_type == "url":
+        url = request.form.get("input")
+        g = Goose()
+        article = g.extract(url=url)
+        input_text = article.cleaned_text
+    elif input_type == "media":
+        file = request.files.get("input")
+        if file:
+            filename = secure_filename(file.filename)
+            file_path = os.path.join(app.root_path, "static", "files", filename)
+            file.save(file_path)
+            input_media = process_files(file_path)
 
-        # Find the sentiment values.
-        sentiment_analysis = find_text_sentiment_analysis(input_text)
-        print(jsonify(sentiment_analysis))
+    # Find the sentiment values.
+    sentiment_analysis = find_text_sentiment_analysis(input_text)
+    print(jsonify(sentiment_analysis))
 
-        return jsonify(sentiment_analysis)
+    return jsonify(sentiment_analysis)
 
 
 # * Chunk the text into pieces of 510 characters.
 def chunk_text(text, max_len=510):
     sentences = text.split(". ")
     chunks = []
-    current_chunk = ''
+    current_chunk = ""
 
     for sentence in sentences:
         # If the chunk is less than max length.
         if len(current_chunk) + len(sentence) < max_len:
             if current_chunk:
                 # Add a space for continuing sentences.
-                current_chunk += ' '
+                current_chunk += " "
             current_chunk += sentence
         # If the chunk is more than max length.
         else:
@@ -94,7 +92,7 @@ def chunk_text(text, max_len=510):
 # * Process Media Files for analysis.
 def process_files(file_path):
     mime_type, encoding = mimetypes.guess_type(file_path)
-    type, subtype = mime_type.split('/', 1)
+    type, subtype = mime_type.split("/", 1)
 
 
 # * Find the polarity scores of the input.
@@ -114,9 +112,9 @@ def find_text_sentiment_analysis(input):
         scores = softmax(scores)
 
         # Scores
-        val_neg = str(scores[0])
-        val_neu = str(scores[1])
-        val_pos = str(scores[2])
+        val_neg = scores[0]
+        val_neu = scores[1]
+        val_pos = scores[2]
 
         # Find Prominent Sentiment
         if (val_neg > val_pos) and (val_neg > val_neu):
@@ -128,20 +126,29 @@ def find_text_sentiment_analysis(input):
 
         # Create Sentiment Analysis Dictionary
         sentiment_dict = {
-            'score_negative': val_neg,
-            'score_neutral': val_neu,
-            'score_positive': val_pos,
-            'prominent_sentiment': prominent_sentiment
+            "score_negative": float(val_neg),
+            "score_neutral":  float(val_neu),
+            "score_positive":  float(val_pos),
+            "prominent_sentiment": prominent_sentiment,
         }
 
         sentiment_dicts.append(sentiment_dict)
 
     # Aggregate the list of chunks to find average sentiment.
     avg_sentiment_dict = {
-        'score_negative': str(np.mean([float(d['score_negative']) for d in sentiment_dicts])),
-        'score_neutral': str(np.mean([float(d['score_neutral']) for d in sentiment_dicts])),
-        'score_positive': str(np.mean([float(d['score_positive']) for d in sentiment_dicts])),
-        'prominent_sentiment': max(set([d['prominent_sentiment'] for d in sentiment_dicts]), key=[d['prominent_sentiment'] for d in sentiment_dicts].count)
+        "score_negative":
+            np.mean([float(d["score_negative"]) for d in sentiment_dicts])
+    ,
+        "score_neutral": 
+            np.mean([float(d["score_neutral"]) for d in sentiment_dicts])
+        ,
+        "score_positive": 
+            np.mean([float(d["score_positive"]) for d in sentiment_dicts])
+        ,
+        "prominent_sentiment": max(
+            set([d["prominent_sentiment"] for d in sentiment_dicts]),
+            key=[d["prominent_sentiment"] for d in sentiment_dicts].count,
+        ),
     }
 
     return avg_sentiment_dict
