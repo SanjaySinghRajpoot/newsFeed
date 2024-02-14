@@ -40,7 +40,7 @@ func GetFriends(c *gin.Context) {
 
 func FollowRequest(c *gin.Context) {
 	// Get the id from the url
-	followingUserID := c.Param("user_id")
+	followingUserID := c.Param("following_user_id")
 
 	followingInt, _ := strconv.Atoi(followingUserID)
 
