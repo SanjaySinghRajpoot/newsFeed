@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/SanjaySinghRajpoot/newsFeed/config"
@@ -30,26 +31,48 @@ func GetNewsFeed(c *gin.Context) {
 
 	for _, follow := range followList {
 
+		// We are only getting the latest post published by the Following
 		var userPosts models.Post
 		userPosts, err := redis.GetPostCache(follow.FollowingUserID)
 		if err != nil {
-			formatError.InternalServerError(c, err)
-			return
+			log.Fatal("Post Cache Not found in getNewsFeed")
 		}
 
 		posts = append(posts, userPosts)
 
-		// var getDBposts models.Post
-		// result := config.DB.Where("user_id = ? AND created_at BETWEEN NOW() - INTERVAL '24 HOURS' AND NOW()", follow.FollowingUserID).Find(&userPosts)
-
-		// if result.Error != nil {
-		// 	formatError.InternalServerError(c, result.Error)
-		// 	return
-		// }
 	}
 
+	// Get the list of random posts from the DB in the past 24 hours with
+	// Positive sentiment
+	var getPositivePosts []models.Post
+	result = config.DB.Debug().Where("created_at BETWEEN NOW() - INTERVAL '24 HOURS' AND NOW()").
+		Where("sentiment_analysis->>'prominent_sentiment' = ?", "POSITIVE").Limit(10).Find(&getPositivePosts)
+
+	if result.Error != nil {
+		formatError.InternalServerError(c, result.Error)
+		return
+	}
+
+	var totalPosts []models.Post
+
+	totalPosts = append(totalPosts, posts...)
+
+	// Check for Unique Posts
+	for _, friendPost := range posts {
+
+		for _, positivePost := range getPositivePosts {
+
+			if friendPost.ID != positivePost.ID {
+				totalPosts = append(totalPosts, positivePost)
+			}
+		}
+	}
+
+	// rand.Seed(time.Now().UnixNano())
+	// rand.Shuffle(len(posts), func(i, j int) { posts[i], posts[j] = posts[j], posts[i] })
+
 	c.JSON(http.StatusOK, gin.H{
-		"post": posts,
+		"post": totalPosts,
 	})
 
 }

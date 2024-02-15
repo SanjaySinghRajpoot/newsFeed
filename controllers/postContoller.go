@@ -17,6 +17,7 @@ import (
 	"github.com/SanjaySinghRajpoot/newsFeed/utils/validations.go"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
+	"gorm.io/datatypes"
 	"gorm.io/gorm"
 )
 
@@ -57,8 +58,9 @@ func CreatePost(c *gin.Context) {
 	}
 
 	post := models.Post{
-		Content: userInput.Content,
-		UserID:  UserID,
+		Content:           userInput.Content,
+		UserID:            UserID,
+		SentimentAnalysis: datatypes.JSONType[models.SentimentAnalysis]{},
 	}
 
 	var wg sync.WaitGroup

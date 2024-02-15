@@ -103,6 +103,10 @@ func GetPostCache(UserID uint) (models.Post, error) {
 
 	str, err := RedisClient.Get(ctx, userIDstr).Bytes()
 
+	if err != nil {
+		return models.Post{}, err
+	}
+
 	err = json.Unmarshal(str, &post)
 
 	if err != nil {

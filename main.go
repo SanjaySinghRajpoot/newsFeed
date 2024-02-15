@@ -40,7 +40,7 @@ func main() {
 	config.Connect()
 
 	// start the CRON JOB
-	CRONjobs()
+	// CRONjobs()
 
 	// Gin router
 	r := gin.Default()

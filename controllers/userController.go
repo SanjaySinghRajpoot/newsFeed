@@ -12,6 +12,7 @@ import (
 	"github.com/SanjaySinghRajpoot/newsFeed/utils/formatError"
 	helpers "github.com/SanjaySinghRajpoot/newsFeed/utils/helper"
 	"github.com/SanjaySinghRajpoot/newsFeed/utils/pagination"
+	"github.com/SanjaySinghRajpoot/newsFeed/utils/redis"
 	"github.com/SanjaySinghRajpoot/newsFeed/utils/validations.go"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
@@ -98,23 +99,23 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	// GetTokenString, er := redis.GetRedisData(userInput.Email)
-	// if er != nil {
-	// 	fmt.Printf("Failed to Get the Redis Cache, Setting the Cache: %s", er)
-	// }
+	GetTokenString, er := redis.GetRedisData(userInput.Email)
+	if er != nil {
+		fmt.Printf("Failed to Get the Redis Cache, Setting the Cache: %s", er)
+	}
 
-	// if GetTokenString != "" {
+	if GetTokenString != "" {
 
-	// 	fmt.Println("redis cache working for login")
+		fmt.Println("redis cache working for login")
 
-	// 	c.SetSameSite(http.SameSiteLaxMode)
-	// 	c.SetCookie("Authorization", GetTokenString, 3600*24*30, "", "", false, true)
-	// 	c.JSON(http.StatusOK, gin.H{
-	// 		"message": "User login successful",
-	// 	})
+		c.SetSameSite(http.SameSiteLaxMode)
+		c.SetCookie("Authorization", GetTokenString, 3600*24*30, "", "", false, true)
+		c.JSON(http.StatusOK, gin.H{
+			"message": "User login successful",
+		})
 
-	// 	return
-	// }
+		return
+	}
 
 	// Find the user by email
 	var user models.User
@@ -155,18 +156,18 @@ func Login(c *gin.Context) {
 	}
 
 	// set the redis cache here
-	// msg, error := redis.SetRedisData(userInput.Email, tokenString)
+	msg, error := redis.SetRedisData(userInput.Email, tokenString)
 
-	// if error != nil {
+	if error != nil {
 
-	// 	fmt.Printf("Failed to Set the Redis Cache: %s", msg)
+		fmt.Printf("Failed to Set the Redis Cache: %s", msg)
 
-	// 	c.JSON(http.StatusInternalServerError, gin.H{
-	// 		"error": error.Error(),
-	// 	})
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": error.Error(),
+		})
 
-	// 	return
-	// }
+		return
+	}
 
 	// Set expiry time and send the token back
 	c.SetSameSite(http.SameSiteLaxMode)

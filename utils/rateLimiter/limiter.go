@@ -26,13 +26,14 @@ func RateLimiter(userID uint) error {
 
 	// get from redis cache
 	count, err := redis.GetUserID(userIDstr)
+
 	if err != nil {
 		fmt.Printf("Failed to Get the Redis Cache")
 		fmt.Println(err)
 	}
 
 	if count >= maxRequests {
-		errReq := errors.New("Too many requests")
+		errReq := errors.New("too many requests")
 		return errReq
 	}
 
