@@ -8,6 +8,7 @@ import (
 
 	"github.com/SanjaySinghRajpoot/newsFeed/config"
 	router "github.com/SanjaySinghRajpoot/newsFeed/router"
+	"github.com/SanjaySinghRajpoot/newsFeed/utils/kafka"
 	"github.com/SanjaySinghRajpoot/newsFeed/utils/redis"
 	sentimentanalysis "github.com/SanjaySinghRajpoot/newsFeed/utils/sentimentAnalysis"
 	"github.com/gin-gonic/gin"
@@ -42,16 +43,23 @@ func main() {
 	// start the CRON JOB
 	// CRONjobs()
 
+	password := EnvVariable("PASSWORD")
+	// Redis Cache Setup
+	redis.RedisClient = redis.SetUpRedis(password)
+
 	// Gin router
 	r := gin.Default()
 
 	// Home Page endpoint
 	r.GET("/", HomepageHandler)
 
-	password := EnvVariable("PASSWORD")
+	var err error
+	kafka.KafkaProducer, err = kafka.InitializeProducer()
 
-	// Redis Cache Setup
-	redis.RedisClient = redis.SetUpRedis(password)
+	if err != nil {
+		fmt.Printf("Failed to create producer: %s\n", err.Error())
+		return
+	}
 
 	// All the Routes
 	router.GetRoute(r)

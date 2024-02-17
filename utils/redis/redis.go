@@ -78,13 +78,17 @@ func SetPostCache(UserID uint, post models.Post) (string, error) {
 	ctx := context.Background()
 
 	redisKey := fmt.Sprintf("%d", UserID)
+	postIdstr := fmt.Sprintf("%d", 1234)
+
+	fmt.Println(redisKey)
+	fmt.Println(postIdstr)
 
 	postBytes, err := json.Marshal(&post)
 	if err != nil {
 		return "", err
 	}
 
-	err = RedisClient.Set(ctx, redisKey, postBytes, 30*time.Minute).Err()
+	err = RedisClient.HSet(ctx, redisKey, postIdstr, string(postBytes)).Err()
 
 	if err != nil {
 		return "Something went wrong", err
@@ -101,17 +105,24 @@ func GetPostCache(UserID uint) (models.Post, error) {
 
 	var post models.Post
 
-	str, err := RedisClient.Get(ctx, userIDstr).Bytes()
+	str, err := RedisClient.HGetAll(ctx, userIDstr).Result()
 
 	if err != nil {
 		return models.Post{}, err
 	}
 
-	err = json.Unmarshal(str, &post)
+	for key, val := range str {
 
-	if err != nil {
-		return models.Post{}, err
+		fmt.Println(key)
+		fmt.Println(val)
+
 	}
+
+	// err = json.Unmarshal(str, &post)
+
+	// if err != nil {
+	// 	return models.Post{}, err
+	// }
 
 	return post, nil
 }

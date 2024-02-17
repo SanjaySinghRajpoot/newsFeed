@@ -12,12 +12,13 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+//  we need to create a precomputed cache for a given user and store it in cache
+
 func GetNewsFeed(c *gin.Context) {
 
 	userID := helpers.GetAuthUser(c).ID
 
 	// get all the people who this is following
-
 	followList := make([]models.Follower, 0)
 	result := config.DB.Where("follower_user_id = ?", userID).Find(&followList)
 

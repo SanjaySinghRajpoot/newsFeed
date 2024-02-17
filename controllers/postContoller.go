@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"strconv"
 	"sync"
@@ -11,8 +12,8 @@ import (
 	"github.com/SanjaySinghRajpoot/newsFeed/utils"
 	"github.com/SanjaySinghRajpoot/newsFeed/utils/formatError"
 	helpers "github.com/SanjaySinghRajpoot/newsFeed/utils/helper"
+	"github.com/SanjaySinghRajpoot/newsFeed/utils/kafka"
 	"github.com/SanjaySinghRajpoot/newsFeed/utils/pagination"
-	limiter "github.com/SanjaySinghRajpoot/newsFeed/utils/rateLimiter"
 	"github.com/SanjaySinghRajpoot/newsFeed/utils/redis"
 	"github.com/SanjaySinghRajpoot/newsFeed/utils/validations.go"
 	"github.com/gin-gonic/gin"
@@ -46,16 +47,16 @@ func CreatePost(c *gin.Context) {
 	UserID := helpers.GetAuthUser(c).ID
 
 	// rate limit
-	err := limiter.RateLimiter(UserID)
+	// err := limiter.RateLimiter(UserID)
 
-	if err != nil {
-		// Return the post
-		c.JSON(http.StatusTooManyRequests, gin.H{
-			"message": err,
-		})
+	// if err != nil {
+	// 	// Return the post
+	// 	c.JSON(http.StatusTooManyRequests, gin.H{
+	// 		"message": err,
+	// 	})
 
-		return
-	}
+	// 	return
+	// }
 
 	post := models.Post{
 		Content:           userInput.Content,
@@ -81,12 +82,24 @@ func CreatePost(c *gin.Context) {
 
 	go func() {
 		defer wg.Done()
-		msg, er := redis.SetPostCache(UserID, post)
-		if er != nil {
+		// msg, er := redis.SetPostCache(UserID, post)
+		// if er != nil {
+		// 	fmt.Println(msg)
+		// 	formatError.InternalServerError(c, er)
+		// 	return
+		// }
+		msg, err := kafka.GenerateNewsFeed("newsfeed", post, kafka.KafkaProducer)
+		if err != nil {
 			fmt.Println(msg)
-			formatError.InternalServerError(c, er)
+			formatError.InternalServerError(c, err)
 			return
 		}
+
+		_, err = redis.GetPostCache(4)
+		if err != nil {
+			log.Fatal("Post Cache Not found in getNewsFeed")
+		}
+
 	}()
 
 	go func() {

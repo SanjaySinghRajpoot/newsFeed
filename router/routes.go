@@ -41,5 +41,6 @@ func GetRoute(r *gin.Engine) {
 	commentRouter.PUT("/:comment_id/update", controllers.UpdateComment)
 	commentRouter.DELETE("/:comment_id/delete", controllers.DeleteComment)
 
+	// we need to optimize this
 	r.GET("/api/newsfeed", controllers.GetNewsFeed)
 }
