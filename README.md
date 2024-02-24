@@ -2,6 +2,11 @@
 
 News Feed is a backend service designed to facilitate a social media-like experience, allowing users to engage in various activities such as creating posts, following other users, adding comments to posts, and more. Built with Golang, Gin, GORM, and PostgreSQL, News Feed provides a robust platform for managing user interactions.
 
+High Level System Design
+
+![image](https://github.com/SanjaySinghRajpoot/newsFeed/assets/67458417/0970f0f2-65db-49d2-b4b7-dcb5b8edbbff)
+
+
 ## Features
 
 - **User Authentication**: Users can securely sign up and log in to access the News Feed platform.
