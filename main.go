@@ -41,7 +41,7 @@ func main() {
 	config.Connect()
 
 	// start the CRON JOB
-	// CRONjobs()
+	CRONjobs()
 
 	password := EnvVariable("PASSWORD")
 	// Redis Cache Setup

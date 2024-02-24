@@ -14,20 +14,18 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-//  we need to create a precomputed cache for a given user and store it in cache
-
 func GetNewsFeed(c *gin.Context) {
 
 	userID := helpers.GetAuthUser(c).ID
 
-	// get all the people who this is following
-	followList := make([]models.Follower, 0)
-	result := config.DB.Where("follower_user_id = ?", userID).Find(&followList)
+	// // get all the people who this is following
+	// followList := make([]models.Follower, 0)
+	// result := config.DB.Where("follower_user_id = ?", userID).Find(&followList)
 
-	if result.Error != nil {
-		formatError.InternalServerError(c, result.Error)
-		return
-	}
+	// if result.Error != nil {
+	// 	formatError.InternalServerError(c, result.Error)
+	// 	return
+	// }
 
 	posts, err := redis.GetPostCache(userID)
 	if err != nil {
@@ -37,7 +35,7 @@ func GetNewsFeed(c *gin.Context) {
 	// Get the list of random posts from the DB in the past 24 hours with
 	// Positive sentiment
 	var getPositivePosts []models.Post
-	result = config.DB.Debug().Where("created_at BETWEEN NOW() - INTERVAL '24 HOURS' AND NOW()").
+	result := config.DB.Debug().Where("created_at BETWEEN NOW() - INTERVAL '24 HOURS' AND NOW()").
 		Where("sentiment_analysis->>'prominent_sentiment' = ?", "POSITIVE").Limit(10).Find(&getPositivePosts)
 
 	if result.Error != nil {
