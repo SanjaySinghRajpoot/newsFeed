@@ -16,7 +16,7 @@ func SetUpRedis(password string) *redis.Client {
 
 	return redis.NewClient(&redis.Options{
 		// use os.env
-		Addr:     "cache:6379",
+		Addr:     "localhost:6379",
 		Password: password,
 		DB:       0,
 	})
@@ -78,17 +78,22 @@ func SetPostCache(UserID uint, post models.Post) (string, error) {
 	ctx := context.Background()
 
 	redisKey := fmt.Sprintf("%d", UserID)
-	postIdstr := fmt.Sprintf("%d", 1234)
 
-	fmt.Println(redisKey)
-	fmt.Println(postIdstr)
+	currentTime := time.Now()
+
+	postTimeStr := currentTime.Format(time.RFC3339Nano)
 
 	postBytes, err := json.Marshal(&post)
 	if err != nil {
 		return "", err
 	}
 
-	err = RedisClient.HSet(ctx, redisKey, postIdstr, string(postBytes)).Err()
+	if RedisClient == nil {
+		fmt.Println("redis not working")
+		return "", nil
+	}
+
+	err = RedisClient.HSet(ctx, redisKey, postTimeStr, string(postBytes)).Err()
 
 	if err != nil {
 		return "Something went wrong", err
@@ -97,32 +102,34 @@ func SetPostCache(UserID uint, post models.Post) (string, error) {
 	return "", nil
 }
 
-func GetPostCache(UserID uint) (models.Post, error) {
+func GetPostCache(UserID uint) ([]models.Post, error) {
 
 	ctx := context.Background()
 
 	userIDstr := fmt.Sprintf("%d", UserID)
 
-	var post models.Post
+	var allPosts []models.Post
 
 	str, err := RedisClient.HGetAll(ctx, userIDstr).Result()
 
 	if err != nil {
-		return models.Post{}, err
+		return []models.Post{}, err
 	}
 
-	for key, val := range str {
+	fmt.Println(str)
 
-		fmt.Println(key)
-		fmt.Println(val)
+	for _, val := range str {
+		var post models.Post
+
+		err = json.Unmarshal([]byte(val), &post)
+		if err != nil {
+			fmt.Println("Error:", err)
+			return allPosts, nil
+		}
+
+		allPosts = append(allPosts, post)
 
 	}
 
-	// err = json.Unmarshal(str, &post)
-
-	// if err != nil {
-	// 	return models.Post{}, err
-	// }
-
-	return post, nil
+	return allPosts, nil
 }

@@ -2,7 +2,9 @@ package controllers
 
 import (
 	"log"
+	"math/rand"
 	"net/http"
+	"time"
 
 	"github.com/SanjaySinghRajpoot/newsFeed/config"
 	"github.com/SanjaySinghRajpoot/newsFeed/models"
@@ -27,20 +29,9 @@ func GetNewsFeed(c *gin.Context) {
 		return
 	}
 
-	// check if the follower has posted anything in the past 24 hours
-	posts := make([]models.Post, 0)
-
-	for _, follow := range followList {
-
-		// We are only getting the latest post published by the Following
-		var userPosts models.Post
-		userPosts, err := redis.GetPostCache(follow.FollowingUserID)
-		if err != nil {
-			log.Fatal("Post Cache Not found in getNewsFeed")
-		}
-
-		posts = append(posts, userPosts)
-
+	posts, err := redis.GetPostCache(userID)
+	if err != nil {
+		log.Fatal("Post Cache Not found in getNewsFeed")
 	}
 
 	// Get the list of random posts from the DB in the past 24 hours with
@@ -69,8 +60,8 @@ func GetNewsFeed(c *gin.Context) {
 		}
 	}
 
-	// rand.Seed(time.Now().UnixNano())
-	// rand.Shuffle(len(posts), func(i, j int) { posts[i], posts[j] = posts[j], posts[i] })
+	rand.Seed(time.Now().UnixNano())
+	rand.Shuffle(len(posts), func(i, j int) { posts[i], posts[j] = posts[j], posts[i] })
 
 	c.JSON(http.StatusOK, gin.H{
 		"post": totalPosts,

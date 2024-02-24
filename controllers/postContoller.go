@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"strconv"
 	"sync"
@@ -14,7 +13,6 @@ import (
 	helpers "github.com/SanjaySinghRajpoot/newsFeed/utils/helper"
 	"github.com/SanjaySinghRajpoot/newsFeed/utils/kafka"
 	"github.com/SanjaySinghRajpoot/newsFeed/utils/pagination"
-	"github.com/SanjaySinghRajpoot/newsFeed/utils/redis"
 	"github.com/SanjaySinghRajpoot/newsFeed/utils/validations.go"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
@@ -82,24 +80,12 @@ func CreatePost(c *gin.Context) {
 
 	go func() {
 		defer wg.Done()
-		// msg, er := redis.SetPostCache(UserID, post)
-		// if er != nil {
-		// 	fmt.Println(msg)
-		// 	formatError.InternalServerError(c, er)
-		// 	return
-		// }
 		msg, err := kafka.GenerateNewsFeed("newsfeed", post, kafka.KafkaProducer)
 		if err != nil {
 			fmt.Println(msg)
 			formatError.InternalServerError(c, err)
 			return
 		}
-
-		_, err = redis.GetPostCache(4)
-		if err != nil {
-			log.Fatal("Post Cache Not found in getNewsFeed")
-		}
-
 	}()
 
 	go func() {

@@ -23,6 +23,9 @@ func main() {
 	// Connect to the postgres database
 	config.Connect()
 
+	// Redis Cache Setup
+	redis.RedisClient = redis.SetUpRedis("12345678")
+
 	// Set up configuration
 	config := &kafka.ConfigMap{
 		"bootstrap.servers": "localhost:9092", // Replace with your Kafka broker address
@@ -30,7 +33,7 @@ func main() {
 		"auto.offset.reset": "earliest",
 	}
 
-	// Create consumer for all three types
+	// Create consumer
 	consumer, err := kafka.NewConsumer(config)
 	if err != nil {
 		panic(err)

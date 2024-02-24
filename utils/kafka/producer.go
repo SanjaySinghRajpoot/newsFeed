@@ -6,7 +6,7 @@ import (
 	"log"
 
 	"github.com/SanjaySinghRajpoot/newsFeed/models"
-	"github.com/confluentinc/confluent-kafka-go/kafka"
+	"gopkg.in/confluentinc/confluent-kafka-go.v1/kafka"
 )
 
 var KafkaProducer *kafka.Producer
@@ -14,7 +14,7 @@ var KafkaProducer *kafka.Producer
 func GenerateNewsFeed(Topic string, post models.Post, producer *kafka.Producer) (string, error) {
 
 	// Convert struct to bytes
-	notifyBytes, err := json.Marshal(post)
+	postBytes, err := json.Marshal(post)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -22,7 +22,7 @@ func GenerateNewsFeed(Topic string, post models.Post, producer *kafka.Producer) 
 	deliveryChan := make(chan kafka.Event)
 	err = producer.Produce(&kafka.Message{
 		TopicPartition: kafka.TopicPartition{Topic: &Topic, Partition: kafka.PartitionAny},
-		Value:          notifyBytes,
+		Value:          postBytes,
 	}, deliveryChan)
 
 	if err != nil {
