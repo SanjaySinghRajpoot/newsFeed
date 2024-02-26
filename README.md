@@ -6,6 +6,9 @@ High Level System Design
 
 ![image](https://github.com/SanjaySinghRajpoot/newsFeed/assets/67458417/0970f0f2-65db-49d2-b4b7-dcb5b8edbbff)
 
+## Motiviation 
+
+I aim to develop a News Feed engine operating on a Pull Model rather than a Push Model. Additionally, I intend to implement a feature that ensures users are presented with predominantly positive posts, while downgrading negative posts within the system itself.
 
 ## Features
 
