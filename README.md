@@ -24,6 +24,7 @@ I aim to develop a News Feed engine operating on a Pull Model rather than a Push
 - **Redis Cache**: Redis Cache is used for smooth login process and improved response time.
 - **Rate Limiter**: A User ID based rate limiter has been added to limit multiple posts by the same user. 
 - **Sentiment Analysis**: Implemented a Flask-based backend service leveraging Hugging Face's Transformer library for sentiment analysis, seamlessly integrating with a pre-trained CardiffNLP Twitter-RoBERTa model. 
+- **Push Based Model**: Our system utilizes a push-based model for populating the cache, ensuring that users have access to the latest posts in real-time.
 
 ## Technologies Used
 

@@ -112,7 +112,7 @@ func GetPosts(c *gin.Context) {
 	pageStr := c.DefaultQuery("page", "1")
 	page, _ := strconv.Atoi(pageStr)
 
-	perPageStr := c.DefaultQuery("perPage", "5")
+	perPageStr := c.DefaultQuery("perPage", "10")
 	perPage, _ := strconv.Atoi(perPageStr)
 
 	preloadFunc := func(query *gorm.DB) *gorm.DB {
